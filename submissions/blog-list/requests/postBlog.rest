@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title": "May 2021",
+    "author": "Anirudh Kannan",
+    "url": "www.fso_redo.com",
+    "likes": 3
+}
