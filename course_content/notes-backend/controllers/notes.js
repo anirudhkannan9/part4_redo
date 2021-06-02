@@ -29,7 +29,7 @@ notesRouter.get('/:id', async (request, response) => {
         response.json(note.toJSON())
     } else {
         response.status(404).end()
-    } o
+    } 
 })
 
 notesRouter.delete('/:id', async (request, response) => {
@@ -38,9 +38,9 @@ notesRouter.delete('/:id', async (request, response) => {
 })
 
 notesRouter.put('/:id', (request, response, next) => {
-    body = request.body
+    const body = request.body
 
-    note = {
+    const note = {
         content: body.content, 
         important: body.important
     }
