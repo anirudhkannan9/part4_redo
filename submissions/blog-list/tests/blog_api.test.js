@@ -157,23 +157,56 @@ describe('deletion of a blog', () => {
     })
 })
 
-//4.14
 describe('updating a blog', () => {
 
+    test('updating only likes of blog with valid id succeeds', async () => {
+        const oldBlogs = await helper.blogsInDb()
+
+        //get object we're trying to update
+        const oldBlog = oldBlogs[0]
+
+        //create new object
+        const newBlog = {
+            title: oldBlog.title,
+            author: oldBlog.author,
+            url: oldBlog.url,
+            likes: 7
+        }
+
+        //send
+        let updatedBlog = await api.put(`/api/blogs/${oldBlog.id}`).send(newBlog)
+        updatedBlog = updatedBlog.body
+
+        //check same amount of blogs, same other properties, different likes property
+        const newBlogs = await helper.blogsInDb()
+        //console.log('OLD BLOGS: ', oldBlogs)
+        console.log('\n\n\n UPDATED BLOG', updatedBlog)
+        //console.log('\n\n\n NEW BLOGS', newBlogs)
+        expect(newBlogs.length).toEqual(oldBlogs.length)
+        expect(newBlogs[0].title).toEqual(oldBlog.title)
+        expect(newBlogs[0].author).toEqual(oldBlog.author)
+        expect(newBlogs[0].url).toEqual(oldBlog.url)
+        expect(newBlogs[0].likes).toEqual(7)
+        expect(updatedBlog.title).toEqual(oldBlog.title)
+        expect(updatedBlog.author).toEqual(oldBlog.author)
+        expect(updatedBlog.url).toEqual(oldBlog.url)
+        expect(updatedBlog.likes).toEqual(7) 
+
+
+    })
+
+    test('updating with nonexistent id fails w statuscode 400', async () => {
+        const validNonExistingId = await helper.nonExistingId()
+
+        const newBlog = {
+            likes: 1000
+        }
+
+        await api.put(`/api/blogs/${validNonExistingId}`).send(newBlog).expect(400)
+
+    })
+
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 afterAll(() => {
     mongoose.connection.close()
