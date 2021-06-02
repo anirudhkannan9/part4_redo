@@ -1,7 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 
-
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog.find({})
     response.json(blogs)
@@ -37,6 +36,26 @@ blogsRouter.post('/', async (request, response) => {
 blogsRouter.delete('/:id', async (request, response) => {
     await Blog.findByIdAndDelete(request.params.id)
     response.sendStatus(204).end()
+})
+
+blogsRouter.put('/:id', async (request, response) => {
+    const body = request.body
+    const oldBlog = await Blog.findById(request.params.id)
+    if (!oldBlog) {
+        response.sendStatus(400).end()
+    } else {
+        //DO NOT USE MONGOOSE SCHEMA OBJECT HERE i.e. no newBlog = new Blog({title: ...}) -- fails to update. Apparently normal JS objects are not only preferred but necessary
+        const newBlog = {
+            title: oldBlog.title, 
+            author: oldBlog.author,
+            url: oldBlog.url,
+            likes: body.likes === undefined ? oldBlog.likes : body.likes
+        }
+    
+        const resultUpdatedBlog = await Blog.findByIdAndUpdate(request.params.id, newBlog, { new: true })
+        //output of this next line doesn't change if we do response.json(resultUpdatedBlog) as opposed to resultUpdatedBlog.toJSON(). Maybe .json(object) calls object's .toJSON() method
+        response.json(resultUpdatedBlog.toJSON())
+    }
 })
   
 module.exports = blogsRouter
