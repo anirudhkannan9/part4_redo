@@ -13,8 +13,8 @@ const initialBlogs = [
     },
     {
         title: 'testBlog2',
-        author: 'Anirudh',
-        url: 'www.testblog2.com',
+        author: 'Anirudh Also',
+        url: 'www.testblogTWO.ORG',
         likes: 9
     }
 
@@ -39,6 +39,13 @@ test('blogs are returned as JSON', async () => {
         .get('/api/blogs')
         .expect(200)
         .expect('Content-Type', /application\/json/) 
+})
+
+test('id property of blog posts is defined as per toJSON method', async () => {
+    const result = await api.get('/api/blogs')
+
+    expect(result.body[0].id).toBeDefined()
+    expect(result.body[1].id).toBeDefined()
 })
 
 afterAll(() => {
