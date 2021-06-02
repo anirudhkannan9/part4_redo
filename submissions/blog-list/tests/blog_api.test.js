@@ -86,7 +86,28 @@ test('correct behaviour for missing likes property', async () => {
     expect(postResponse.author).toEqual('Anirudh poster no likes')
     expect(postResponse.url).toEqual('www.testblogpostNOLIKES.zerolikes')
     expect(postResponse.likes).toEqual(0)
-    
+})
+
+test('correct behaviour for missing title or url', async () => {
+    const blogObject1 = {
+        title: 'new blog to test correct behaviour if no url',
+        author: 'Anirudh poster no url',
+        likes: 1
+    }
+
+    let postResponse1 = await api.post('/api/blogs').send(blogObject1).expect(400)
+
+    const blogObject2 = {
+        url: 'www.testblogpostNOTITLE.abc',
+        author: 'Anirudh poster no title',
+        likes: 2
+    }
+
+    let postResponse2 = await api.post('/api/blogs').send(blogObject2).expect(400)
+
+    let getResponse = await api.get('/api/blogs')
+    getResponse = getResponse.body
+    expect(getResponse.length).toEqual(initialBlogs.length)
 
 })
 
