@@ -73,6 +73,23 @@ test('posting works correctly', async () => {
     expect(newBlog.likes).toEqual(8)
 })
 
+test('correct behaviour for missing likes property', async () => {
+    const blogObject = {
+        title: 'new blog to test correct behaviour if likes property missing',
+        author: 'Anirudh poster no likes',
+        url: 'www.testblogpostNOLIKES.zerolikes'
+    }
+
+    let postResponse = await api.post('/api/blogs').send(blogObject).expect(200).expect('Content-Type', /application\/json/)
+    postResponse = postResponse.body
+    expect(postResponse.title).toEqual('new blog to test correct behaviour if likes property missing')
+    expect(postResponse.author).toEqual('Anirudh poster no likes')
+    expect(postResponse.url).toEqual('www.testblogpostNOLIKES.zerolikes')
+    expect(postResponse.likes).toEqual(0)
+    
+
+})
+
 afterAll(() => {
     mongoose.connection.close()
   })
