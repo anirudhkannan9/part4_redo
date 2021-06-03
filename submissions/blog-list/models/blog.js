@@ -4,7 +4,12 @@ const blogSchema = new mongoose.Schema({
     title: String,
     author: String,
     url: String,
-    likes: Number
+    likes: Number,
+    //references are now stored in both documents: the note references the user who created it, and the user has an array of references to all of the notes created by them.
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }
 })
 
 
