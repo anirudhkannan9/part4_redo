@@ -2,6 +2,7 @@ POST http://localhost:3001/api/notes
 Content-Type: application/json
 
 {
-    "content": "After refactoring in part4a", 
-    "important": false
+    "content": "The existing code and tests need to be changed when the user is added to the system", 
+    "important": true,
+    "userId": "60b86ef9387af503a4ac13bc"
 }
