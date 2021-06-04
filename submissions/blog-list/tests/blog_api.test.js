@@ -263,6 +263,111 @@ describe('when there is initially one user in db', () => {
         const usersAtEnd = await helper.usersInDb()
         expect(usersAtEnd).toHaveLength(usersAtStart.length)
     })
+
+    test('creation fails with statuscode 400 and appropriate message if password is missing', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: 'anotherUser',
+            name: 'Another User'
+        }
+
+        const result = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+        
+        expect(result.body.error).toContain('password missing')
+        
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtEnd).toHaveLength(usersAtStart.length)
+    })
+
+    test('creation fails with statuscode 400 and appropriate message if password is undefined', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: 'anotherUser',
+            name: 'Another User',
+            password: undefined
+        }
+
+        const result = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+        
+        expect(result.body.error).toContain('password missing')
+        
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtEnd).toHaveLength(usersAtStart.length)
+
+    })
+
+    test('creation fails with statuscode 400 and appropriate message if password is null', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: 'anotherUser',
+            name: 'Another User',
+            password: null
+        }
+
+        const result = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+        
+        expect(result.body.error).toContain('password missing')
+        
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtEnd).toHaveLength(usersAtStart.length)
+    })
+
+    test('creation fails with statuscode 400 and appropriate message if password is empty string', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: 'anotherUser',
+            name: 'Another User',
+            password: ''
+        }
+
+        const result = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+        
+        expect(result.body.error).toContain('password missing')
+        
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtEnd).toHaveLength(usersAtStart.length)
+    })
+    
+    test('creation fails with statuscode 400 and an appropriate message if password is less than 3 characters long', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: 'anotherUser',
+            name: 'Another User',
+            password: 'n'
+        }
+
+        const result = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+        
+        expect(result.body.error).toContain('password must be at least')
+        
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtEnd).toHaveLength(usersAtStart.length)
+    })
 })
 
 afterAll(() => {
