@@ -6,8 +6,6 @@ const User = require('../models/user')
 loginRouter.post('/', async (request, response) => {
     const body = request.body
 
-    
-
     // searching for the user from the database by the username attached to the request
     const user = await User.findOne({ username: body.username })
 

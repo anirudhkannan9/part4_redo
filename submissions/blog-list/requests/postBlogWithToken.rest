@@ -3,8 +3,8 @@ Content-Type: application/json
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imthbm5hbmExIiwiaWQiOiI2MGI5M2E2ZDNkOWI3MjJkYzE3ZGNjMmMiLCJpYXQiOjE2MjI3NzUyNjh9.AjRrWng0KWKRIhYSTXwnQIJ6mOfz0B7b5ZWq7GRpMUY
 
 {
-    "title": "Posting a blog with token-based authentication (2nd try)",
-    "url": "nolink.lol",
-    "author": "Yours truly",
-    "likes": 2
+    "title": "Posting a blog after refactoring extracting token from request into middleware",
+    "url": "https://stackoverflow.com/questions/12518132/modifying-express-js-request-object",
+    "author": "Anirudh",
+    "likes": 41
 }
