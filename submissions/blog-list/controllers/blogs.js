@@ -2,6 +2,7 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const userExtractor = require('../utils/middleware').userExtractor
 //const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
@@ -18,17 +19,9 @@ blogsRouter.get('/:id', async (request, response) => {
     } 
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', userExtractor, async (request, response) => {
     const body = request.body
-
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    //diverges slightly from course material to allow specificity in error msgs
-    if (!request.token) {
-        return response.status(401).json({ error: 'token missing' })
-    } else if (!decodedToken.id) {
-        return response.status(401).json({ error: 'token invalid' })
-    }
-    const user = await User.findById(decodedToken.id)
+    const user = request.user
 
     if (body.title === undefined || body.url === undefined) {
         response.send(400).end()
@@ -50,17 +43,10 @@ blogsRouter.post('/', async (request, response) => {
     }
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!request.token) {
-        return response.status(401).json({ error: 'token missing' })
-    } else if (!decodedToken.id) {
-        return response.status(401).json({ error: 'token invalid' })
-    }
-
-    const user = await User.findById(decodedToken.id)
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
+    const user = request.user
     const blog = await Blog.findById(request.params.id)
+
     const blogUserId = blog.user.toString()
     const userId = user.id.toString()
     if (blogUserId === userId) {
@@ -69,8 +55,6 @@ blogsRouter.delete('/:id', async (request, response) => {
         await user.save()
         response.sendStatus(204).end()
     } else {
-        //console.log(blogUserId)
-        //console.log(userId)
         return response.status(401).json({ error: 'Blogs can only be deleted by the user who created them' })
     }
 })
