@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 
 const supertest = require('supertest')
 const mongoose = require('mongoose')
@@ -7,11 +8,60 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const bcrypt = require('bcrypt')
 const User = require('../models/user')
+const { request } = require('express')
 
 
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(helper.initialBlogs)
+    // const loginObject1 = {
+    //     "username": "kannana1", 
+    //     "password": "secret"
+    // }
+
+    // let userAfterLogin = await api
+    //     .post('/api/login')
+    //     .send(loginObject1)
+
+    // const userAfterLogin1 = userAfterLogin.body
+    // console.log('USER 1: ', userAfterLogin1)
+    // const token1 = userAfterLogin1.token
+
+    // const blog0 = helper.initialBlogs[0]
+    // await api
+    //     .post('/api/blogs')
+    //     .auth(token1, { type: 'bearer' })
+    //     .send(blog0)
+    //     .expect(response => console.log(response.body))
+    //     .expect(200)
+    //     .expect('Content-Type', /application\/json/)
+
+    // const loginObject2 = {
+    //     "username": "root",
+    //     "password": "sekret"
+    // }
+
+    // userAfterLogin = await api
+    //     .post('/api/login')
+    //     .send(loginObject2)
+        
+    // const userAfterLogin2 = userAfterLogin.body
+    // console.log('USER 2: ', userAfterLogin2)
+    // const token2 = userAfterLogin2.token
+
+    // const blog1 = helper.initialBlogs[1]
+    // await api
+    //     .post('/api/blogs')
+    //     .auth(token2, { type: 'bearer'})
+    //     .send(blog1)
+    //     .expect(response => console.log(response.body))
+    //     .expect(200)
+    //     .expect('Content-Type', /application\/json/)
+
+    // let initialBlogs = await api.get('/api/blogs')
+    // initialBlogs = initialBlogs.body
+    // console.log('INITIAL BLOGS: ', initialBlogs)
+
 })
 
 describe('when there are some initial blogs saved', () => {
@@ -68,7 +118,6 @@ describe('viewing a specific blog', () => {
 })
 
 describe('addition of a new blog', () => {
-    //succeeds w valid data
     test('posting works correctly', async () => {
         const blogObject = {
             title: 'new blog to test that posting works',
@@ -76,8 +125,29 @@ describe('addition of a new blog', () => {
             url: 'www.testblogPOST.xyz',
             likes: 8
         }
-    
-        let postResponse = await api.post('/api/blogs').send(blogObject).expect(200).expect('Content-Type', /application\/json/)
+
+        const loginObject = {
+            "username": "kannana1",
+            "password": "secret"
+        }
+
+        let userAfterLogin = await api
+            .post('/api/login')
+            .send(loginObject)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        userAfterLogin = userAfterLogin.body
+        const token = userAfterLogin.token
+
+        let postResponse = await api
+            .post('/api/blogs')
+            .auth(token, { type: 'bearer' })
+            .send(blogObject)
+            .expect(response => console.log(response.body))
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
         postResponse = postResponse.body
         expect(postResponse.title).toEqual('new blog to test that posting works')
         expect(postResponse.author).toEqual('Anirudh poster')
@@ -94,23 +164,48 @@ describe('addition of a new blog', () => {
         expect(newBlog.likes).toEqual(8)
     })
 
-    //fails w statuscode 400 if data invalid
-    test('fails w statuscode 400 if data invalid (missing title or url)', async () => {
+    test('fails w statuscode 400 if data invalid (missing url or title)', async () => {
         const blogObject1 = {
             title: 'new blog to test correct behaviour if no url',
             author: 'Anirudh poster no url',
             likes: 1
         }
+
+        const loginObject = {
+            "username": "kannana1",
+            "password": "secret"
+        }
+
+        let userAfterLogin = await api
+            .post('/api/login')
+            .send(loginObject)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        userAfterLogin = userAfterLogin.body
+        console.log('USER: ', userAfterLogin)
+        
+        const token = userAfterLogin.token
+        console.log(token)
+
     
-        await api.post('/api/blogs').send(blogObject1).expect(400)
+        await api
+            .post('/api/blogs')
+            .auth(token, { type: 'bearer' })
+            .send(blogObject1)
+            .expect(400)
     
         const blogObject2 = {
             url: 'www.testblogpostNOTITLE.abc',
             author: 'Anirudh poster no title',
             likes: 2
         }
-    
-        await api.post('/api/blogs').send(blogObject2).expect(400)
+
+        await api
+            .post('/api/blogs')
+            .auth(token, { type: 'bearer' })
+            .send(blogObject2)
+            .expect(400)
     
         let getResponse = await api.get('/api/blogs')
         getResponse = getResponse.body
@@ -126,29 +221,82 @@ describe('addition of a new blog', () => {
     })
 
     test('succeeds w statuscode 200 if likes property missing and other data valid', async () => {
+        const loginObject = {
+            "username": "kannana1",
+            "password": "secret"
+        }
+
+        let userAfterLogin = await api
+            .post('/api/login')
+            .send(loginObject)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        userAfterLogin = userAfterLogin.body
+        console.log('USER: ', userAfterLogin)
+        
+        const token = userAfterLogin.token
+        console.log(token)
+
         const blogObject = {
             title: 'new blog to test correct behaviour if likes property missing',
             author: 'Anirudh poster no likes',
             url: 'www.testblogpostNOLIKES.zerolikes'
         }
     
-        let postResponse = await api.post('/api/blogs').send(blogObject).expect(200).expect('Content-Type', /application\/json/)
+        let postResponse = await api
+            .post('/api/blogs')
+            .auth(token, { type: 'bearer' })
+            .send(blogObject)
+            .expect(200).expect('Content-Type', /application\/json/)
         postResponse = postResponse.body
         expect(postResponse.title).toEqual('new blog to test correct behaviour if likes property missing')
         expect(postResponse.author).toEqual('Anirudh poster no likes')
         expect(postResponse.url).toEqual('www.testblogpostNOLIKES.zerolikes')
         expect(postResponse.likes).toEqual(0)
     })
+
+    test('fails with statuscode 401 if token not provided', async () => {
+        const blogObject = {
+            title: 'new blog to test correct behaviour if likes property missing',
+            author: 'Anirudh poster no likes',
+            url: 'www.testblogpostNOLIKES.zerolikes'
+        }
+    
+        let postResponse = await api
+            .post('/api/blogs')
+            .send(blogObject)
+            .expect(401)
+
+        let getResponse = await api.get('/api/blogs')
+        getResponse = getResponse.body
+        expect(getResponse.length).toEqual(helper.initialBlogs.length)
+
+
+    })
     
 })
 
 describe('deletion of a blog', () => {
-    test('succeeds w statuscode 204 if id valid', async () => {
+    test('succeeds w statuscode 204 if id valid and correct user', async () => {
         const blogsInDb = await helper.blogsInDb()
+
+        let userAfterLogin = await api
+            .post('/api/login')
+            .send({
+                "username": "root",
+                "password": "sekret"
+            })
+            .expect(200)
+
+        userAfterLogin = userAfterLogin.body
+        console.log(userAfterLogin)
+        const token = userAfterLogin.token
         
         const blogToDelete = blogsInDb[1]
         await api
             .delete(`/api/blogs/${blogToDelete.id}`)
+            .auth(token, { type: 'bearer' })
             .expect(204)
         
         const blogsInDbAfterDelete = await helper.blogsInDb()
@@ -157,11 +305,41 @@ describe('deletion of a blog', () => {
         expect(blogTitlesAfterDelete).toContain(blogsInDb[0].title)
         expect(blogTitlesAfterDelete).not.toContain(blogsInDb[1].title)
     })
+
+    test('fails with 401 if a user tries to delete a blog they did not create', async () => {
+        const blogsInDb = await helper.blogsInDb()
+        console.log(blogsInDb)
+
+        let userAfterLogin = await api
+            .post('/api/login')
+            .send({
+                "username": "kannana1",
+                "password": "secret"
+            })
+            .expect(200)
+
+        userAfterLogin = userAfterLogin.body
+        const token = userAfterLogin.token
+
+        const blogToDelete = blogsInDb[1]
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .auth(token, { type: 'bearer' })
+            .expect(401)
+
+        const blogsInDbAfterDelete = await helper.blogsInDb()
+        expect(blogsInDbAfterDelete.length).toEqual(blogsInDb.length)
+        console.log(blogsInDbAfterDelete)
+        const blogTitlesAfterDelete = blogsInDbAfterDelete.map(b => b.title)
+        expect(blogTitlesAfterDelete).toContain(blogsInDb[0].title)
+        expect(blogTitlesAfterDelete).toContain(blogsInDb[1].title)
+
+    })
 })
 
 describe('updating a blog', () => {
 
-    test('updating only likes of blog with valid id succeeds', async () => {
+    test('updating only likes of blog with valid id succeeds with statuscode 200', async () => {
         const oldBlogs = await helper.blogsInDb()
 
         //get object we're trying to update
@@ -172,11 +350,27 @@ describe('updating a blog', () => {
             title: oldBlog.title,
             author: oldBlog.author,
             url: oldBlog.url,
-            likes: 7
+            likes: 7,
+            user: '60bbd013bf4c35848f604f46'
         }
 
+        let userAfterLogin = await api
+            .post('/api/login')
+            .send({
+                "username": "root",
+                "password": "sekret"
+            })
+            .expect(200)
+
+        userAfterLogin = userAfterLogin.body
+        const token = userAfterLogin.token
+
         //send
-        let updatedBlog = await api.put(`/api/blogs/${oldBlog.id}`).send(newBlog)
+        let updatedBlog = await api
+            .put(`/api/blogs/${oldBlog.id}`)
+            .auth(token, { type: 'bearer' })
+            .send(newBlog)
+            .expect(200)
         updatedBlog = updatedBlog.body
 
         //check same amount of blogs, same other properties, different likes property
@@ -193,8 +387,6 @@ describe('updating a blog', () => {
         expect(updatedBlog.author).toEqual(oldBlog.author)
         expect(updatedBlog.url).toEqual(oldBlog.url)
         expect(updatedBlog.likes).toEqual(7) 
-
-
     })
 
     test('updating with nonexistent id fails w statuscode 400', async () => {
@@ -204,9 +396,74 @@ describe('updating a blog', () => {
             likes: 1000
         }
 
-        await api.put(`/api/blogs/${validNonExistingId}`).send(newBlog).expect(400)
+        let userAfterLogin = await api
+            .post('/api/login')
+            .send({
+                "username": "root",
+                "password": "sekret"
+            })
+            .expect(200)
+
+        userAfterLogin = userAfterLogin.body
+        const token = userAfterLogin.token
+
+
+        await api
+            .put(`/api/blogs/${validNonExistingId}`)
+            .auth(token, { type: 'bearer' })
+            .send(newBlog)
+            .expect(400)
 
     })
+
+    test('updating blog by user who did not create it fails with statuscode 401', async () => {
+        const oldBlogs = await helper.blogsInDb()
+
+        //get object we're trying to update
+        const oldBlog = oldBlogs[0]
+
+        //create new object
+        const newBlog = {
+            title: oldBlog.title,
+            author: oldBlog.author,
+            url: oldBlog.url,
+            likes: 7,
+            user: '60bbd013bf4c35848f604f46'
+        }
+
+        let userAfterLogin = await api
+            .post('/api/login')
+            .send({
+                "username": "kannana1",
+                "password": "secret"
+            })
+            .expect(200)
+
+        userAfterLogin = userAfterLogin.body
+        const token = userAfterLogin.token
+
+        //send
+        let updatedBlog = await api
+            .put(`/api/blogs/${oldBlog.id}`)
+            .auth(token, { type: 'bearer' })
+            .send(newBlog)
+            .expect(response => console.log(response.error))
+            .expect(401)
+    
+
+        //check same amount of blogs, same properties incl. likes
+        const newBlogs = await helper.blogsInDb()
+        //console.log('OLD BLOGS: ', oldBlogs)
+        console.log('\n\n\n UPDATED BLOG', updatedBlog)
+        //console.log('\n\n\n NEW BLOGS', newBlogs)
+        expect(newBlogs.length).toEqual(oldBlogs.length)
+        expect(newBlogs[0].title).toEqual(oldBlog.title)
+        expect(newBlogs[0].author).toEqual(oldBlog.author)
+        expect(newBlogs[0].url).toEqual(oldBlog.url)
+        expect(newBlogs[0].likes).toEqual(3)
+    })
+
+
 
 })
 

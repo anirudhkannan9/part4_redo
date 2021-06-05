@@ -8,8 +8,7 @@ Content-Type: application/json
     "password": "secret"
 }
 
-//previously created users: 
-
+//created users (non-test database)
 # {
 #     "notes": [],
 #     "username": "kannana1",
@@ -22,3 +21,13 @@ Content-Type: application/json
 #     "name": "Superuser",
 #     "password": "secret"
 # }
+
+//created users (test db)
+# # {
+#     "notes": [],
+#     "username: "kannana1",
+#     "name": "Anirudh Kannan",
+#     "password": "secret"
+# }
+
+//also user with username "root", password 'sekret'

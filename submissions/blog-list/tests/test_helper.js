@@ -6,14 +6,16 @@ const initialBlogs = [
         title: 'testBlog1',
         author: 'Anirudh',
         url: 'www.testblog1.com',
-        likes: 3
+        likes: 3,
+        user: '60bbd013bf4c35848f604f46' //username: "root"
 
     },
     {
         title: 'testBlog2',
-        author: 'Anirudh Also',
+        author: 'Root',
         url: 'www.testblogTWO.ORG',
-        likes: 9
+        likes: 9,
+        user: '60bbd013bf4c35848f604f46' //username: "root"
     }
 
 ]

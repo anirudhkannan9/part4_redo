@@ -11,7 +11,7 @@ loginRouter.post('/', async (request, response) => {
 
     //if we can't find the user, we presume that the username isn't valid; send a corresponding error message. 
     //Code here diverges slightly from course material to facilitate more specific error messages. Logic still the same.
-    if (!user || user === null) {
+    if (user === null || user === undefined) {
         return response.status(401).json({ error: 'invalid username' })
     }
 

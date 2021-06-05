@@ -18,7 +18,9 @@ const errorHandler = (error, request, response, next) => {
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   } else if (error.name === 'JsonWebTokenError') {
-    return response.status(400).json({ error: 'jsonwebtoken not provided or malformed'})
+    return response.status(401).json({ error: 'invalid token'})
+  } else if (error.name === 'TokenExpiredError') {
+    return response.status(401).json({ error: 'token expired' })
   }
 
   next(error)
@@ -34,12 +36,15 @@ const tokenExtractor = (request, response, next) => {
 
 const userExtractor = async (request, response, next) => {
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  console.log('DECODED TOKEN: ', decodedToken)
+  console.log('ID REFERRED TO BY DECODED TOKEN', decodedToken.id)
   // if (!request.token) {
   //   return response.status(401).json({ error: 'token missing' })
   // } else if (!decodedToken.id) {
   //   return response.status(401).json({ error: 'token invalid' })
   // }
   request.user = await User.findById(decodedToken.id)
+  console.log('USER FOUND BY DECODED TOKEN: ', request.user)
   
   next()
 }
