@@ -14,54 +14,6 @@ const { request } = require('express')
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(helper.initialBlogs)
-    // const loginObject1 = {
-    //     "username": "kannana1", 
-    //     "password": "secret"
-    // }
-
-    // let userAfterLogin = await api
-    //     .post('/api/login')
-    //     .send(loginObject1)
-
-    // const userAfterLogin1 = userAfterLogin.body
-    // console.log('USER 1: ', userAfterLogin1)
-    // const token1 = userAfterLogin1.token
-
-    // const blog0 = helper.initialBlogs[0]
-    // await api
-    //     .post('/api/blogs')
-    //     .auth(token1, { type: 'bearer' })
-    //     .send(blog0)
-    //     .expect(response => console.log(response.body))
-    //     .expect(200)
-    //     .expect('Content-Type', /application\/json/)
-
-    // const loginObject2 = {
-    //     "username": "root",
-    //     "password": "sekret"
-    // }
-
-    // userAfterLogin = await api
-    //     .post('/api/login')
-    //     .send(loginObject2)
-        
-    // const userAfterLogin2 = userAfterLogin.body
-    // console.log('USER 2: ', userAfterLogin2)
-    // const token2 = userAfterLogin2.token
-
-    // const blog1 = helper.initialBlogs[1]
-    // await api
-    //     .post('/api/blogs')
-    //     .auth(token2, { type: 'bearer'})
-    //     .send(blog1)
-    //     .expect(response => console.log(response.body))
-    //     .expect(200)
-    //     .expect('Content-Type', /application\/json/)
-
-    // let initialBlogs = await api.get('/api/blogs')
-    // initialBlogs = initialBlogs.body
-    // console.log('INITIAL BLOGS: ', initialBlogs)
-
 })
 
 describe('when there are some initial blogs saved', () => {
