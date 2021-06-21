@@ -8,3 +8,9 @@
 -	Wrote and ran tests for component rendering and interactive behaviour in frontend (Jest)
 -	Wrote and ran E2E tests of application frontend & backend (Cypress)
 
+## Demos
+
+### User administration (not in frontend)
+
+
+
